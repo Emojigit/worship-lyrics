@@ -263,7 +263,7 @@ def interpepter(filename, savefilename):
                             curr_lyrics += line + "\n"
             curr_line += 1
         # end for line in f
-        prs.save(savefilename)
+    prs.save(savefilename)
 
 
 if __name__ == "__main__":
