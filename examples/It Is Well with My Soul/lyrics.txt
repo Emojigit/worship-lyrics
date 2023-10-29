@@ -1,9 +1,17 @@
+!VER 2
+!BKG bkg.jpeg
+!FONT Arial
+!LYRICS-COLOR FFFFFF
+!FOOTER-COLOR 000000
+!LYRICS-SIZE 60
+!FOOTER-SIZE 24
+
+!FOOTER-START
 It Is Well with My Soul
 Written by Horatio Spafford
-bkg.jpeg
-FFFFFF
+!FOOTER-END
 
-#EMPTY!
+!EMPTY
 
 When peace like a river, attendeth my way,
 When sorrows like sea billows roll;

@@ -1,0 +1,123 @@
+!VER 2
+
+# It is well with my Soul
+
+!BKG ../It Is Well with My Soul/bkg.jpeg
+!FONT Arial
+!LYRICS-COLOR FFFFFF
+!FOOTER-COLOR 000000
+!LYRICS-SIZE 60
+!FOOTER-SIZE 24
+
+!FOOTER-START
+It Is Well with My Soul
+Written by Horatio Spafford
+!FOOTER-END
+
+!EMPTY
+
+When peace like a river, attendeth my way,
+When sorrows like sea billows roll;
+
+Whatever my lot, Thou hast taught me to know
+It is well, it is well, with my soul.
+
+Refrain
+It is well, (it is well),
+
+With my soul, (with my soul)
+It is well, it is well, with my soul.
+
+Though Satan should buffet, though trials should come,
+Let this blest assurance control,
+
+That Christ has regarded my helpless estate,
+And hath shed His own blood for my soul.
+
+My sin, oh, the bliss of this glorious thought!
+My sin, not in part but the whole,
+
+Is nailed to the cross, and I bear it no more,
+Praise the Lord, praise the Lord, O my soul!
+
+For me, be it Christ, be it Christ hence to live:
+If Jordan above me shall roll,
+
+No pang shall be mine, for in death as in life,
+Thou wilt whisper Thy peace to my soul.
+
+But Lord, 'tis for Thee, for Thy coming we wait,
+The sky, not the grave, is our goal;
+
+Oh, trump of the angel! Oh, voice of the Lord!
+Blessed hope, blessed rest of my soul.
+
+And Lord, haste the day when the faith shall be sight,
+The clouds be rolled back as a scroll;
+
+The trump shall resound, and the Lord shall descend,
+A song in the night, oh my soul!
+
+# The Lord's My Shepherd
+
+!BKG ../The Lord is My Shepherd/bkg.jpg
+!FONT Arial
+!COLOR 000000
+!LYRICS-SIZE 60
+!FOOTER-SIZE 24
+
+!FOOTER-START
+The Lord's My Shepherd
+by Francis Rous
+!FOOTER-END
+
+!SECTION-START Shep-1
+The Lord's my shepherd,
+I'll not want.
+
+He makes me down to lie
+in pastures green.
+He leadeth methe quiet waters by.
+!SECTION-END
+
+!SECTION-START Shep-2
+My soul he doth restore again,
+and me to walk doth make
+
+within the paths of righteousness,
+e'en for his own name's sake.
+!SECTION-END
+
+!SECTION-START Shep-3
+Yea, though I walk
+in death's dark vale,
+yet will I fear no ill.
+
+For thou art with me,
+and thy rod and staff
+me comfort still.
+!SECTION-END
+
+!SECTION-START Shep-4
+My table thou hast furnished
+in presence of my foes:
+
+my head thou dost with oil anoint,
+and my cup overflows.
+!SECTION-END
+
+!SECTION-START Shep-C
+Goodness and mercy all my life
+shall surely follow me.
+
+And in God's house for evermore
+my dwelling place shall be. 
+!SECTION-END
+
+!EMPTY
+!SECTION Shep-1
+!SECTION Shep-2
+!SECTION Shep-3
+!SECTION Shep-4
+!SECTION Shep-C
+!SECTION Shep-C

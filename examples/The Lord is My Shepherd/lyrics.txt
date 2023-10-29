@@ -1,0 +1,62 @@
+!VER 2
+!BKG bkg.jpg
+!FONT Arial
+!COLOR 000000
+!LYRICS-SIZE 60
+!FOOTER-SIZE 24
+
+!FOOTER-START
+The Lord's My Shepherd
+by Francis Rous
+!FOOTER-END
+
+!SECTION-START Shep-1
+The Lord's my shepherd,
+I'll not want.
+
+He makes me down to lie
+in pastures green.
+He leadeth methe quiet waters by.
+!SECTION-END
+
+!SECTION-START Shep-2
+My soul he doth restore again,
+and me to walk doth make
+
+within the paths of righteousness,
+e'en for his own name's sake.
+!SECTION-END
+
+!SECTION-START Shep-3
+Yea, though I walk
+in death's dark vale,
+yet will I fear no ill.
+
+For thou art with me,
+and thy rod and staff
+me comfort still.
+!SECTION-END
+
+!SECTION-START Shep-4
+My table thou hast furnished
+in presence of my foes:
+
+my head thou dost with oil anoint,
+and my cup overflows.
+!SECTION-END
+
+!SECTION-START Shep-C
+Goodness and mercy all my life
+shall surely follow me.
+
+And in God's house for evermore
+my dwelling place shall be. 
+!SECTION-END
+
+!EMPTY
+!SECTION Shep-1
+!SECTION Shep-2
+!SECTION Shep-3
+!SECTION Shep-4
+!SECTION Shep-C
+!SECTION Shep-C
