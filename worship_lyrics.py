@@ -47,6 +47,7 @@ def add_slide(prs, lyrics, header_data):
                 1.5), Inches(15), Inches(6)
         )
         text_shape.fill.background()
+        text_shape.line.fill.background()
         text_frame = text_shape.text_frame
         text_frame.clear()
         text_frame.vertical_anchor = MSO_ANCHOR.TOP
@@ -62,6 +63,7 @@ def add_slide(prs, lyrics, header_data):
         MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(6.5), Inches(10), Inches(2)
     )
     cpr_shape.fill.background()
+    cpr_shape.line.fill.background()
     cpr_frame = cpr_shape.text_frame
     cpr_frame.clear()
     cpr_frame.vertical_anchor = MSO_ANCHOR.BOTTOM
