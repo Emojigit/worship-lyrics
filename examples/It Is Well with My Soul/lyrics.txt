@@ -3,6 +3,8 @@ Written by Horatio Spafford
 bkg.jpeg
 FFFFFF
 
+#EMPTY!
+
 When peace like a river, attendeth my way,
 When sorrows like sea billows roll;
 
