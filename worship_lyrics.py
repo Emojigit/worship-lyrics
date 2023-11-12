@@ -5,6 +5,10 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
 from warnings import warn
 import os.path as path
+from numbers import Real as RealNumbers
+from packaging import version
+
+__version__ = version.parse("2.1.0")
 
 
 class ParseError(RuntimeError):
@@ -19,10 +23,10 @@ class ParseWarning(Warning):
         super().__init__(real_msg)
 
 
-def initialize_pptx() -> Presentation:
+def initialize_pptx(width: RealNumbers = 16, height: RealNumbers = 9) -> Presentation:
     prs = Presentation()
-    prs.slide_height = Inches(9)
-    prs.slide_width = Inches(16)
+    prs.slide_width = Inches(width)
+    prs.slide_height = Inches(height)
 
     return prs
 
@@ -41,8 +45,10 @@ def create_slide(prs: Presentation, curr_line, curr_lyrics, vars):
     # lyrics text
     if curr_lyrics != "":
         text_shape = shapes.add_shape(
-            MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(
-                1.5), Inches(15), Inches(6)
+            MSO_SHAPE.RECTANGLE,
+            Inches(0), Inches(vars["SLIDE-HEIGHT"] / 6),
+            Inches(vars["SLIDE-WIDTH"]),
+            Inches(vars["SLIDE-HEIGHT"] - (vars["SLIDE-HEIGHT"] / 6))
         )
         text_shape.fill.background()
         text_shape.line.fill.background()
@@ -80,8 +86,10 @@ def create_slide(prs: Presentation, curr_line, curr_lyrics, vars):
     # footer
     if "FOOTER" in vars and vars["FOOTER"] != "":
         text_shape = shapes.add_shape(
-            MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(
-                6.5), Inches(10), Inches(2)
+            MSO_SHAPE.RECTANGLE,
+            Inches(vars["SLIDE-WIDTH"] / 32),
+            Inches(vars["SLIDE-HEIGHT"] - (vars["SLIDE-WIDTH"] / 32) - 2),
+            Inches(vars["SLIDE-WIDTH"] - (vars["SLIDE-WIDTH"] / 32)), Inches(2)
         )
         text_shape.fill.background()
         text_shape.line.fill.background()
@@ -125,19 +133,37 @@ def ensure_has_param(curr_line, cmdline, curr_state):
 
 
 def interpepter(filename, savefilename):
-    vars = {}
+    vars = {
+        "SLIDE-WIDTH":  16,
+        "SLIDE-HEIGHT": 9
+    }
     curr_lyrics = ""
     curr_state = "read"
     curr_line = 1
-    prs = initialize_pptx()
+    prs = None
     file_dir = path.dirname(filename)
     with open(filename, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if curr_line == 1:
-                if line != "!VER 2":
-                    raise ParseError(
-                        1, "First line of lyrics file must be \"!VER 2\", got \"{}\" instead".format(line))
+                if line[0:5] != "!VER ":
+                    raise ParseError(1,
+                                     "First line of lyrics file must be \"!VER\" command, got \"{}\" instead".format(line))
+                version_string = line[5:]
+                try:
+                    ver = version.parse(version_string)
+                except version.InvalidVersion as e:
+                    raise ParseError(1,
+                                     "Invalid version \"{}\"".format(version_string)) from e
+                if ver.major != __version__.major:
+                    raise ParseError(1,
+                                     "Major version \"{}\" in the lyrics file does not match that of this script ({})".format(ver.major, __version__.major))
+                if ver.minor > __version__.minor:
+                    raise ParseError(1,
+                                     "Minor version \"{}\" in the lyrics file is newer than that of this script ({})".format(ver.minor, __version__.minor))
+                if ver.micro != __version__.micro:
+                    warn((1, "Micro version \"{}\" in the lyrics file does not match that of this script ({})".format(
+                        ver.micro, __version__.micro)), ParseWarning)
             elif len(line) > 0 and line[0] == "#":
                 continue
             else:
@@ -145,6 +171,9 @@ def interpepter(filename, savefilename):
                     case "read":
                         if line == "":
                             if curr_lyrics != "":
+                                if prs == None:
+                                    prs = initialize_pptx(
+                                        vars["SLIDE-WIDTH"], vars["SLIDE-HEIGHT"])
                                 create_slide(prs, curr_line, curr_lyrics, vars)
                                 curr_lyrics = ""
                         elif line[0] == "!":
@@ -153,6 +182,29 @@ def interpepter(filename, savefilename):
                                 cmdline.append("")
                             cmdline[1] = cmdline[1].strip()
                             match cmdline[0]:
+                                case "WIDTH":
+                                    if prs != None:
+                                        raise ParseError(curr_line,
+                                                         "Attempt to use !WIDTH command after the first slide")
+                                    ensure_has_param(
+                                        curr_line, cmdline, curr_state)
+                                    try:
+                                        vars["SLIDE-WIDTH"] = float(cmdline[1])
+                                    except ValueError as e:
+                                        raise ParseError(curr_line,
+                                                         "Failed to parse {} as number".format(cmdline[1])) from e
+                                case "HEIGHT":
+                                    if prs != None:
+                                        raise ParseError(curr_line,
+                                                         "Attempt to use !HEIGHT command after the first slide")
+                                    ensure_has_param(
+                                        curr_line, cmdline, curr_state)
+                                    try:
+                                        vars["SLIDE-HEIGHT"] = float(
+                                            cmdline[1])
+                                    except ValueError as e:
+                                        raise ParseError(curr_line,
+                                                         "Failed to parse {} as number".format(cmdline[1])) from e
                                 case "BKG":
                                     ensure_has_param(
                                         curr_line, cmdline, curr_state)
@@ -201,6 +253,9 @@ def interpepter(filename, savefilename):
                                     if curr_lyrics != "":
                                         raise ParseError(curr_line,
                                                          "Attempt to execute !EMPTY with lyrics")
+                                    if prs == None:
+                                        prs = initialize_pptx(
+                                            vars["SLIDE-WIDTH"], vars["SLIDE-HEIGHT"])
                                     create_slide(prs, curr_line, "", vars)
                                 case "SECTION":
                                     ensure_has_param(
@@ -213,6 +268,9 @@ def interpepter(filename, savefilename):
                                                          "Attempt to refer to invalid section {}".format(cmdline[0]))
                                     section_lyrics = tuple(
                                         s.strip() for s in vars["SECTION-" + cmdline[1]].split("\n\n"))
+                                    if prs == None:
+                                        prs = initialize_pptx(
+                                            vars["SLIDE-WIDTH"], vars["SLIDE-HEIGHT"])
                                     for s in section_lyrics:
                                         create_slide(
                                             prs, curr_line, s, vars)
@@ -267,6 +325,7 @@ def interpepter(filename, savefilename):
 
 
 if __name__ == "__main__":
+    print("Worship Lyrics version {}".format(__version__))
     import argparse
     parser = argparse.ArgumentParser(description='Create worship lyrics PPTX')
     parser.add_argument('filename')

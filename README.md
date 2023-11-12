@@ -7,10 +7,27 @@
 Every file must start with this line:
 
 ```text
-!VER 2
+!VER <version>
 ```
 
-This is the version indicator to avoid incompatible versions of this program in processing the lyrics file.
+Where `<version>` is in the format of [`<major>.<minor>.<micro>`](https://packaging.pypa.io/en/latest/version.html#packaging.version.VERSION_PATTERN). This is the version indicator to avoid incompatible versions of this program in processing the lyrics file.
+
+The major version is bumped once a major change is done, i.e. lyrics files created for the previous version no longer work on the newer version. The minor version is bumped once new features are added while maintaining backward compatibility. The micro version is bumped once a bug fix is carried out without changing how the program should function.
+
+For example, if the lyrics file format changes, the major version is bumped and all other values are set to zero. If a new command or syntax is introduced, the minor version is bumped and the micro version is set to zero. If a bug is found and fixed, the micro version is bumped without changing the rest of the string.
+
+Therefore, if you use a feature only available after a minor version, it is possible to use it even if the minor version component in the version string is older than the desired version of the program. However, that is strongly discouraged and you should always use the correct version string.
+
+### Dimention *(new in 2.1.0)*
+
+The following commands defines the dimention of the slide in inches:
+
+```text
+!WIDTH 16
+!HEIGHT 9
+```
+
+These commands cannot be used after the creation of the first slide.
 
 ### Background image
 

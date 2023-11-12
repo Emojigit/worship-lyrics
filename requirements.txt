@@ -1,4 +1,5 @@
 lxml==4.9.3
+packaging==23.2
 Pillow==9.5.0
 python-pptx==0.6.22
 XlsxWriter==3.1.9
