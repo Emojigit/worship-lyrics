@@ -8,7 +8,7 @@ import os.path as path
 from numbers import Real as RealNumbers
 from packaging import version
 
-__version__ = version.parse("2.1.0")
+__version__ = version.parse("2.2.0")
 
 
 class ParseError(RuntimeError):
@@ -43,46 +43,49 @@ def create_slide(prs: Presentation, curr_line, curr_lyrics, vars):
     else:
         warn((curr_line, "No background image while creating slides"), ParseWarning)
     # lyrics text
-    if curr_lyrics != "":
-        text_shape = shapes.add_shape(
-            MSO_SHAPE.RECTANGLE,
-            Inches(0), Inches(vars["SLIDE-HEIGHT"] / 6),
-            Inches(vars["SLIDE-WIDTH"]),
-            Inches(vars["SLIDE-HEIGHT"] - (vars["SLIDE-HEIGHT"] / 6))
-        )
-        text_shape.fill.background()
-        text_shape.line.fill.background()
-        text_frame = text_shape.text_frame
-        text_frame.clear()
-        text_frame.vertical_anchor = MSO_ANCHOR.TOP
-        text_paragraph = text_frame.paragraphs[0]
+    text_shape = shapes.add_shape(
+        MSO_SHAPE.RECTANGLE,
+        Inches(0 + vars["LYRICS-OFFSET-L"]), Inches(vars["SLIDE-HEIGHT"] / 6),
+        Inches(vars["SLIDE-WIDTH"] - vars["LYRICS-OFFSET-L"] -
+               vars["LYRICS-OFFSET-R"]),
+        Inches(vars["SLIDE-HEIGHT"] - (vars["SLIDE-HEIGHT"] / 6))
+    )
+    text_shape.fill.background()
+    text_shape.line.fill.background()
+    text_frame = text_shape.text_frame
+    text_frame.clear()
+    text_frame.vertical_anchor = MSO_ANCHOR.TOP
+    text_paragraph = text_frame.paragraphs[0]
+    text_paragraph.alignment = PP_ALIGN.CENTER
+    if curr_lyrics == "":
+        text_paragraph.text = "\n"
+    else:
         text_paragraph.text = curr_lyrics
-        text_paragraph.alignment = PP_ALIGN.CENTER
-        # lyrics font size
-        if "LYRICS-SIZE" in vars and vars["LYRICS-SIZE"] != "":
-            try:
-                font_size = float(vars["LYRICS-SIZE"])
-            except ValueError as e:
-                raise ParseError(curr_line,
-                                 "Invalid lyrics size {}".format(vars["LYRICS-SIZE"])) from e
-            text_paragraph.font.size = Pt(font_size)
-        else:
-            warn((curr_line, "No lyrics font size while creating slides"), ParseWarning)
-        # lyrics font name
-        if "LYRICS-FONT" in vars and vars["LYRICS-FONT"] != "":
-            font_name = vars["LYRICS-FONT"]
-            text_paragraph.font.name = font_name
-        else:
-            warn((curr_line, "No lyrics font name while creating slides"), ParseWarning)
-        # lyrics font color
-        if "LYRICS-COLOR" in vars and vars["LYRICS-COLOR"] != "":
-            try:
-                font_color = RGBColor.from_string(vars["LYRICS-COLOR"])
-            except ValueError as e:
-                raise ParseError(curr_line,
-                                 "Invalid lyrics color {}".format(vars["LYRICS-COLOR"])) from e
-            text_paragraph.font.color.rgb = font_color
-        text_paragraph.font.bold = True
+    # lyrics font size
+    if "LYRICS-SIZE" in vars and vars["LYRICS-SIZE"] != "":
+        try:
+            font_size = float(vars["LYRICS-SIZE"])
+        except ValueError as e:
+            raise ParseError(curr_line,
+                             "Invalid lyrics size {}".format(vars["LYRICS-SIZE"])) from e
+        text_paragraph.font.size = Pt(font_size)
+    else:
+        warn((curr_line, "No lyrics font size while creating slides"), ParseWarning)
+    # lyrics font name
+    if "LYRICS-FONT" in vars and vars["LYRICS-FONT"] != "":
+        font_name = vars["LYRICS-FONT"]
+        text_paragraph.font.name = font_name
+    else:
+        warn((curr_line, "No lyrics font name while creating slides"), ParseWarning)
+    # lyrics font color
+    if "LYRICS-COLOR" in vars and vars["LYRICS-COLOR"] != "":
+        try:
+            font_color = RGBColor.from_string(vars["LYRICS-COLOR"])
+        except ValueError as e:
+            raise ParseError(curr_line,
+                             "Invalid lyrics color {}".format(vars["LYRICS-COLOR"])) from e
+        text_paragraph.font.color.rgb = font_color
+    text_paragraph.font.bold = True
     # footer
     if "FOOTER" in vars and vars["FOOTER"] != "":
         text_shape = shapes.add_shape(
@@ -135,7 +138,9 @@ def ensure_has_param(curr_line, cmdline, curr_state):
 def interpepter(filename, savefilename):
     vars = {
         "SLIDE-WIDTH":  16,
-        "SLIDE-HEIGHT": 9
+        "SLIDE-HEIGHT": 9,
+        "LYRICS-OFFSET-L": 0,
+        "LYRICS-OFFSET-R": 0,
     }
     curr_lyrics = ""
     curr_state = "read"
@@ -205,6 +210,24 @@ def interpepter(filename, savefilename):
                                     except ValueError as e:
                                         raise ParseError(curr_line,
                                                          "Failed to parse {} as number".format(cmdline[1])) from e
+                                case "LYRICS-OFFSET-L":
+                                    ensure_has_param(
+                                        curr_line, cmdline, curr_state)
+                                    try:
+                                        vars["LYRICS-OFFSET-L"] = float(
+                                            cmdline[1])
+                                    except ValueError as e:
+                                        raise ParseError(curr_line,
+                                                         "Failed to parse {} as number".format(cmdline[1])) from e
+                                case "LYRICS-OFFSET-R":
+                                    ensure_has_param(
+                                        curr_line, cmdline, curr_state)
+                                    try:
+                                        vars["LYRICS-OFFSET-R"] = float(
+                                            cmdline[1])
+                                    except ValueError as e:
+                                        raise ParseError(curr_line,
+                                                         "Failed to parse {} as number".format(cmdline[1])) from e
                                 case "BKG":
                                     ensure_has_param(
                                         curr_line, cmdline, curr_state)
@@ -265,7 +288,7 @@ def interpepter(filename, savefilename):
                                                          "Attempt to execute !SECTION with lyrics")
                                     if ("SECTION-" + cmdline[1]) not in vars:
                                         raise ParseError(curr_line,
-                                                         "Attempt to refer to invalid section {}".format(cmdline[0]))
+                                                         "Attempt to refer to invalid section {}".format(cmdline[1]))
                                     section_lyrics = tuple(
                                         s.strip() for s in vars["SECTION-" + cmdline[1]].split("\n\n"))
                                     if prs == None:
